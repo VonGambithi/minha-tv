@@ -260,10 +260,10 @@ final class HomeApps {
 
     // MARK: - Top buttons (the round ones at the top right)
 
-    static final String TOP_LIVE = "live", TOP_INPUTS = "inputs", TOP_SETTINGS = "settings", TOP_RECENTS = "recents", TOP_STORE = "store";
-    static final List<String> TOP_DEFAULT = Collections.unmodifiableList(java.util.Arrays.asList(TOP_LIVE, TOP_INPUTS, TOP_SETTINGS));
-    /** What can be a top button: the default three, and Recent Apps and App Store for whoever adds them. */
-    static final List<String> TOP_ALL = Collections.unmodifiableList(java.util.Arrays.asList(TOP_LIVE, TOP_INPUTS, TOP_SETTINGS, TOP_RECENTS, TOP_STORE));
+    static final String TOP_LIVE = "live", TOP_INPUTS = "inputs", TOP_SETTINGS = "settings", TOP_RECENTS = "recents", TOP_STORE = "store", TOP_APPS = "apps";
+    static final List<String> TOP_DEFAULT = Collections.unmodifiableList(java.util.Arrays.asList(TOP_APPS, TOP_LIVE, TOP_INPUTS, TOP_SETTINGS));
+
+    static final List<String> TOP_ALL = Collections.unmodifiableList(java.util.Arrays.asList(TOP_APPS, TOP_LIVE, TOP_INPUTS, TOP_SETTINGS, TOP_RECENTS, TOP_STORE));
     static final int MAX_TOP = TOP_ALL.size();
 
     /** The keys of the top buttons, in order (Settings > Top Buttons; by default Live TV, HDMI Inputs, Settings). */
@@ -304,6 +304,7 @@ final class HomeApps {
     private static Item topButton(String key) {
         switch (key) {
             case TOP_LIVE: return action(LIVE_TV, TOP_LIVE, Ui.tr("light|Live TV"), "live_tv");
+            case TOP_APPS: return action(ALL_APPS, TOP_APPS, Ui.tr("All Apps"), "apps");
             case TOP_INPUTS: return action(INPUTS, TOP_INPUTS, Ui.tr("HDMI Inputs"), "hdmi");
             case TOP_RECENTS: return action(RECENTS, TOP_RECENTS, Ui.tr("Recent Apps"), "recents");
             case TOP_STORE: return action(APP, TOP_STORE, Ui.tr("App Store"), "store");
@@ -361,6 +362,11 @@ final class HomeApps {
 
     static Item settings() {
         return shortcut(SETTINGS, "settings", Ui.tr("Settings"), "settings");
+    }
+
+    /** All Apps on its own, for the top row's first button. */
+    static Item allApps() {
+        return shortcut(ALL_APPS, "all", Ui.tr("All Apps"), "apps");
     }
 
     /** Shortcuts in the bottom drawer. */

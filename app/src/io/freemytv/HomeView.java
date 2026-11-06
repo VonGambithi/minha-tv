@@ -115,7 +115,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private static final ExecutorService LOADER = Executors.newSingleThreadExecutor();
     // Light design (the L_ constants): title, tab bar, three recommendation cards and the shelf.
     // The tab bar is a 68 px capsule; the cards sit on the 5-column grid (the wide one spans 3).
-    private static final float L_TITLE_BASE = 130, L_TABBAR_TOP = 158, L_TABBAR_H = 68, L_CARDS_TOP = 262, L_CARD_H = 442;
+    private static final float L_TITLE_BASE = 130, L_TABBAR_TOP = 69, L_TABBAR_H = 68, L_CARDS_TOP = 262, L_CARD_H = 442;
     private static final float WATCH_GAP = 40;
     private static final float L_TALL_W = 320, L_CARD_GAP = 40, L_BUTTON = 68, L_BUTTON_GAP = 20, L_BUTTON_CY = 103;
     private static final float L_STATUS = 25, L_STATUS_GAP = 22;
@@ -665,6 +665,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             heroLayer.invalidate();
             wake();
         });
+        setLightButtons(HomeApps.topButtons(null));
+        Prefs.ensureAllAppsButton();   // saved buttons from before the All Apps button existed get it first
         setLightButtons(HomeApps.topButtons(null));
         recs.setLight(true);
         checkNight(false);
@@ -1526,6 +1528,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     /** Live TV, the inputs with a device on, All Apps and Settings. */
     private static List<HomeApps.Item> statusList(Context c) {
         List<HomeApps.Item> list = new ArrayList<>();
+        list.add(HomeApps.allApps());   // first, as on the home screen's top row
         list.addAll(HomeApps.shortcuts(c));
         list.add(HomeApps.settings());
         return list;
@@ -4605,8 +4608,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             return;
         }
         String hello = picksMode() ? Ui.tr("For You") : Ui.tr("Continue Watching");
-        c.drawText(hello, MARGIN * k - Ui.leftBearing(lTitle, hello), L_TITLE_BASE * k, lTitle);
-        titleRight = MARGIN * k + lTitle.measureText(hello);
+        if (picksMode()) {
+            titleRight = MARGIN * k;   // no title over the tabs: they start at the margin, on the buttons' line
+        } else {
+            c.drawText(hello, MARGIN * k - Ui.leftBearing(lTitle, hello), L_TITLE_BASE * k, lTitle);
+            titleRight = MARGIN * k + lTitle.measureText(hello);
+        }
         if (!picksMode()) {
             if (continueMode()) drawWatchRow(c);
             if (HomeData.coinCount() > 0 || playingTab != null) drawQuotes(c);
@@ -4819,7 +4826,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         int color = Ui.alpha(tone(L_INK, 0xEBFFFFFF), 0.85f);
         float x = MARGIN * k;
         // The top title ("For You", or "Continue Watching") is on this line too: the icons start after it, not on it.
-        if (!clockMode()) x += lTitle.measureText(picksMode() ? Ui.tr("For You") : Ui.tr("Continue Watching")) + gap;
+        if (!clockMode() && !picksMode()) x += lTitle.measureText(Ui.tr("Continue Watching")) + gap;
         if (network != 0) x = drawStatusIcon(c, network == 2 ? "ethernet" : "wifi", x, height, gap, color);
         if (bluetoothConnected) x = drawStatusIcon(c, "bluetooth", x, height, gap, color);
         if (usbConnected) drawStatusIcon(c, "usb", x, height, gap, color);

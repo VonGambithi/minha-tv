@@ -64,7 +64,7 @@ final class Recs {
     // TMDB's own mirror of api.themoviedb.org, on the images' domain: some ISPs block the other name (Jio, #327)
     private static final String API = "https://api.tmdb.org/3";
     /** The most cards per tab and hour (Prefs.cards() picks how many, 3 by default); the home screen shows 3 at a time and scrolls. */
-    static final int MAX_CARDS = 6;
+    static final int MAX_CARDS = 30;
 
     /** The backdrops: on a 720p UI, TMDB's 1280-wide copy shows the same and is lighter to download and decode. */
     private static final String IMAGES = "https://image.tmdb.org/t/p/" + (Backdrop.W <= 1280 ? "w1280" : "original");
@@ -75,9 +75,9 @@ final class Recs {
     /** How often Trakt is asked whether the account changed (marked watched, the watchlist): one small request. */
     private static final long TRAKT_EVERY = 10 * 60_000L;
     /** Bump when what is saved for each title changes (the saved list is discarded and fetched again). */
-    private static final int CACHE_VERSION = 6;   // 6: lists of up to POOL + TRAKT_MAX
+    private static final int CACHE_VERSION = 7;   // 7: lists of up to POOL + TRAKT_MAX, 30 cards a tab
     /** TMDB's titles in the list (trending, then the new releases), as on main. */
-    private static final int POOL = 24;
+    private static final int POOL = 60;
     /** Trakt's titles in the list: about what the tabs show of them (now(): up to 2 in 5 in progress, 3 in 5 liked). */
     private static final int TRAKT_MAX = MAX_CARDS;
     /** Images kept on disk: a backdrop and a poster for every title the list can hold. */
@@ -1353,7 +1353,7 @@ final class Recs {
             synchronized (images) {
                 images.put(p.backdrop, backdrop);
                 if (poster != null) posters.put(p.backdrop, poster);
-                while (images.size() > (forLight ? Prefs.cards() + 7 : 4)) images.remove(images.keySet().iterator().next());
+                while (images.size() > (forLight ? Prefs.cards() + 7 : 12)) images.remove(images.keySet().iterator().next());
                 posters.keySet().retainAll(images.keySet());
             }
             notifyListeners();

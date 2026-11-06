@@ -111,31 +111,15 @@ final class Backdrop {
             return new Backdrop(null, frost, null, wide, light, lightGlass, night, nightGlass);
         }
 
-        float boost = Math.max(0, Math.min(0.3f, (luminance(out, 0, 0.22f, 0.5f, 0.62f) - 0.22f) * 1.1f));
-        Paint scrim = new Paint(Paint.DITHER_FLAG);
-        scrim.setShader(new LinearGradient(0, 0, W * 0.68f, 0,
-                new int[] {black(0.66f + boost), black(0.52f + boost * 0.8f), black(0.26f + boost * 0.4f), black(0.07f), 0},
-                new float[] {0, 0.25f, 0.55f, 0.8f, 1}, Shader.TileMode.CLAMP));
-        c.drawRect(0, 0, W, H, scrim);
-        // At the bottom, a faint scrim: the photo must show through the glass shelf (the glass provides the contrast).
-        scrim.setShader(new LinearGradient(0, H, 0, H * 0.4f,
-                new int[] {black(0.38f), black(0.3f), black(0.18f), black(0.05f), 0},
-                new float[] {0, 0.25f, 0.55f, 0.8f, 1}, Shader.TileMode.CLAMP));
-        c.drawRect(0, H * 0.4f, W, H, scrim);
-        // Behind the prices (above the shelf, on the right), a localized scrim for the small text.
-        scrim.setShader(new android.graphics.RadialGradient(W * 0.8f, H * 0.65f, W * 0.24f,
-                new int[] {black(0.42f), black(0.18f), 0}, new float[] {0, 0.55f, 1}, Shader.TileMode.CLAMP));
-        c.save();
-        c.scale(1, 0.32f, W * 0.8f, H * 0.65f);
-        c.drawCircle(W * 0.8f, H * 0.65f, W * 0.24f, scrim);
-        c.restore();
-        scrim.setShader(new LinearGradient(0, 0, 0, H * 0.24f, new int[] {black(0.34f), black(0.1f), 0},
-                new float[] {0, 0.5f, 1}, Shader.TileMode.CLAMP));
-        c.drawRect(0, 0, W, H * 0.24f, scrim);
+        // Dark design: a flat 10% veil over the photo, which stays sharp behind the widgets.
+        Paint veil = new Paint(Paint.DITHER_FLAG);
+        veil.setColor(black(0.10f));
+        c.drawRect(0, 0, W, H, veil);
 
         int[] frost = reduce(out, FW, FH, 3, 3);
         int[] glass = reduce(out, GW, GH, 2, 2);
-        return new Backdrop(gpu(out), frost, glass, null, null, null, null, null);
+        int[] sharp = reduce(out, GW * 2 + GW / 2, GH * 2 + GH / 2, 0, 0);
+        return new Backdrop(gpu(out), frost, glass, null, null, null, null, null, sharp, null, GW * 2 + GW / 2, GH * 2 + GH / 2);
     }
 
     /** How many times smaller the screensaver photo's frosted version is (the glass math uses the same number). */

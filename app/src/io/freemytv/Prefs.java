@@ -187,9 +187,9 @@ final class Prefs {
 
     static void setTemperature(String v) { put("temperature", v); }
 
-    /** Picks per tab on the home screen: 3 (as it always was) up to Recs.MAX_CARDS. */
+    /** Picks per tab on the home screen: 3 up to Recs.MAX_CARDS (30 by default). */
     static int cards() {
-        return Math.max(3, Math.min(Recs.MAX_CARDS, sp().getInt("cards", 3)));
+        return Math.max(3, Math.min(Recs.MAX_CARDS, sp().getInt("cards", 30)));
     }
 
     static void setCards(int n) { put("cards", n); }
@@ -452,6 +452,16 @@ final class Prefs {
         StringBuilder sb = new StringBuilder();
         for (String p : keys) sb.append(sb.length() == 0 ? "" : ",").append(p);
         put("topButtons", sb.toString());
+    }
+
+    /** All Apps first on the top row, once, for a TV that saved its buttons before that button existed. */
+    static void ensureAllAppsButton() {
+        List<String> keys = topButtons();
+        if (keys == null || keys.contains(HomeApps.TOP_APPS)) return;
+        List<String> next = new ArrayList<>();
+        next.add(HomeApps.TOP_APPS);
+        next.addAll(keys);
+        setTopButtons(next);
     }
 
     // MARK: - Remote buttons

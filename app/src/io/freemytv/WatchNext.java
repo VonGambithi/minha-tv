@@ -28,7 +28,7 @@ final class WatchNext {
     static final String PERMISSION = "android.permission.READ_TV_LISTINGS";
     /** Declared by apps that write the TV's lists (apps can also write their own rows and Watch Next without it). */
     private static final String WRITE_EPG = "com.android.providers.tv.permission.WRITE_EPG_DATA";
-    static final int PER_APP = 2, MAX = 12;
+    static final int PER_APP = 2, MAX = 15;
     /** Channel names that mean "continue watching" (apps name their own channel). */
     private static final Set<String> CHANNEL_NAMES = new HashSet<>(java.util.Arrays.asList(
             "continue watching", "seguir viendo", "continuar viendo", "continuar assistindo", "continue assistindo"));
