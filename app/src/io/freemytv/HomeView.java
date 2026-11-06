@@ -2667,7 +2667,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             // Only read when it's shown: with the picks or the clock, Continue Watching costs nothing.
             final String mode = Prefs.topContent();
             final boolean allowed = WatchNext.allowed(c);
-            final List<WatchNext.Item> w = mode.equals(Prefs.TOP_CONTINUE) ? WatchNext.load(c) : new ArrayList<>();
+            final List<WatchNext.Item> w = WatchNext.load(c);   // Continue Watching sits above the shelf, whatever the top shows
             handler.post(() -> {
                 // A provider/package refresh must not cancel a drag or undo a move that was just saved.
                 boolean keepOrder = reordering || pendingOrderSaves > 0 || orderAtLoad != orderRevision;
@@ -4111,8 +4111,13 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     /** Card i's place on screen (without its focus growth), scrolled with the row. */
     private void watchRect(int i, RectF out) {
         float step = (WatchArt.W + WATCH_GAP) * k;
-        float x = MARGIN * k + i * step - watchScroll.value * step, y = L_CARDS_TOP * k;
+        float x = MARGIN * k + i * step - watchScroll.value * step, y = watchRowTop() * k;
         out.set(x, y, x + WatchArt.W * k, y + WatchArt.H * k);
+    }
+
+    /** Continue Watching sits above the app shelf, so both rows fit on one page. */
+    private float watchRowTop() {
+        return L_PLATTER_TOP - WatchArt.H - 46;
     }
 
     /** Each card's title and details line ("Netflix · S2 E5 · 23 min left"), cut to the card's width once per list. */
@@ -4146,7 +4151,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             if (!watchLoaded) return;   // not read yet: saying "nothing" now could be wrong
             String text = watchAllowed ? Ui.tr("Nothing half-watched in your apps.")
                     : Ui.tr("Missing permission: pick Continue Watching again in Home Settings.");
-            c.drawText(text, MARGIN * k, (L_CARDS_TOP + 60) * k, lCardMeta);
+            c.drawText(text, MARGIN * k, (watchRowTop() + 60) * k, lCardMeta);
             return;
         }
         if (watchTitles == null || watchTextsK != k || watchTextsGen != Ui.generation) prepareWatchTexts();
